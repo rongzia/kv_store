@@ -1,0 +1,17 @@
+language: c
+compiler:
+  - clang
+  - gcc
+branches:
+  only:
+    - master
+script:
+  - make
+  - make db-bench
+  - cd tests
+  - make
+  - cd ..
+
+notifications:
+  email:
+      - overred.shuttler@gmail.com

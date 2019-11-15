@@ -1,0 +1,88 @@
+================================================================
+nessDB v1.8 with LSM-Tree
+Copyright (C) 2012 BohuTANG________________ 
+_____________________________  __ \__  __ )
+__  __ \  _ \_  ___/_  ___/_  / / /_  __  |
+_  / / /  __/(__  )_(__  )_  /_/ /_  /_/ / 
+/_/ /_/\___//____/ /____/ /_____/ /_____/  
+================================================================
+
+  nessDB is a fast Key-Value database(embedded), supports Redis-Protocol(PING,SET,MSET,GET,MGET,DEL,EXISTS,INFO,SHUTDOWN).
+  Which is written in ANSI C with BSD LICENSE and works in most POSIX systems without external dependencies.
+
+  nessDB is very efficient on disk-based random access, since it's using log-structured-merge (LSM) trees.
+
+  The 1.8 version is still under construction.
+
+  LAYOUT
+  ======
+  Doc		-- Documentations
+  bench		-- Benchmark testing
+  engine	-- The kernel of storage
+  server	-- Database server
+  interface	-- Others binding of nessDB(python, lua)
+  tools		-- Some tools of nessDB
+
+  
+  V1.8 FEATURES
+  =============
+  a. Better performances on Random-Read/Random-Write
+  b. Log recovery
+  c. Using LSM-Tree as storage engine
+  d. Background detached-thread merging
+  e. Level LRU
+  f. Support billion data
+  For more details, please refer to documentations which in 'Doc' folder.
+
+  HOW TODO BENCHMARK
+  ==================
+  $make db-bench
+  $./db-bench <write | read > <count> 
+	or 
+  $./db-bench readone <key>
+
+  If you want delete all idnexes/db/logs, you should do:
+  $make cleandb
+
+  HOW TO USE AS DB ENGINE
+  =======================
+  a. OPEN
+		struct nessdb *db = db_open(bufferpool-size, db-path, is_log_recovery); //NOTICE: bufferpool-size is bytes
+
+  b. ADD
+  		struct slice sk, sv;
+		sk.len = 3;
+		sk.data = "key";
+		sv.len = 5;
+		sv.data = "value";
+		db_add(db, &sk, &sv);
+
+  c. DELETE
+  		struct slice sk;
+		sk.len = 3;
+		sk.data = "key";
+		db_remove(db, &sk);
+
+  d. READ
+  		struct slice sk, sv;
+		sk.len = 3;
+		sk.data = "key";
+		int ret = db_get(db, &sk, &sv);
+		if (ret == 1) {
+			printf("data is %s", sv.data);
+			free(sv.data);
+		} else
+			print("Not found");
+
+  e. CLOSE
+  		db_close(db);
+
+  HOW TO USE AS DB SERVER
+  =======================
+  $make db-server
+  $./db-server
+  Now, you can connect it with anyone redis-client, even can use the redis-benchmark for performance testing(Note the db-server only support a few redis command).
+
+
+
+  Thanks for your attention!
